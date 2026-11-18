@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <title>المنصة | بوابة حجز مواعيد الاستشارات 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Decorative Brand Shapes -->
+  <div class="brand-shape shape-1"></div>
+  <div class="brand-shape shape-2"></div>
+  <div class="brand-shape shape-3"></div>
+
+  <!-- Header with Logo -->
+  <header class="tp-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <img src="logo.jpg" alt="The Platform - المنصة" class="header-logo">
+        <div class="header-text">
+          <h1 class="main-title"><span id="gateTrigger">بوابة</span> حجز مواعيد الاستشارات</h1>
+          <div class="header-meta">
+            <span class="meta-chip"><span class="mc-icon">📅</span> السبت 12 ديسمبر 2026</span>
+            <span class="meta-chip"><span class="mc-icon">⏰</span> 10:30 ص – 5:30 م</span>
+            <span class="meta-chip"><span class="mc-icon">📍</span> توقيت عمّان</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Booth Quick-Jump Tabs -->
+  <div class="sticky-nav">
+    <div class="tabs-scroll" id="boothQuickTabs"></div>
+  </div>
+
+  <main class="main-content">
+    <!-- Public Booking View -->
+    <section id="publicView" class="view-panel">
+
+      <!-- Service Selector -->
+      <div class="service-bar">
+        <div class="service-chip" id="chipThePlatform" onclick="selectService('the-platform')">
+          <div class="chip-left">
+            <img src="logo.jpg" alt="" class="chip-logo">
+            <div>
+              <span class="chip-name">The Platform</span>
+              <span class="chip-desc">الخدمة الأساسية</span>
+            </div>
+          </div>
+        </div>
+        <div class="service-chip active" id="chipBooth" onclick="selectService('booth')">
+          <div class="chip-left">
+            <div class="chip-icon-wrap">🎪</div>
+            <div>
+              <span class="chip-name">موعد زيارة بوث</span>
+              <span class="chip-desc">حجز البوثات السبعة</span>
+            </div>
+          </div>
+          <span class="chip-active-dot">متاح</span>
+        </div>
+      </div>
+
+      <!-- The Platform info -->
+      <div id="thePlatformView" class="platform-info-card hidden">
+        <img src="logo.jpg" alt="" class="platform-info-logo">
+        <h3>خدمة The Platform – المنصة</h3>
+        <p>هذه الخدمة محفوظة بكامل إعداداتها ولم يتم حذفها أو تعديلها. مخصصة لفعاليات المعرض العامة.</p>
+        <button class="tp-btn tp-btn-primary" onclick="selectService('booth')">الانتقال لحجز البوثات ➜</button>
+      </div>
+
+      <!-- Desktop Booths Calendars View -->
+      <div id="desktopBoothsSection" class="desktop-only-view booths-list"></div>
+
+      <!-- Dedicated Mobile Experience View (Different Native App Layout) -->
+      <div id="mobileBoothsSection" class="mobile-only-view"></div>
+
+    </section>
+
+    <!-- Admin View -->
+    <section id="adminView" class="view-panel hidden">
+      <div class="admin-panel">
+        <div class="admin-top">
+          <div class="admin-top-info">
+            <img src="logo.jpg" alt="" class="admin-logo">
+            <div>
+              <h2>لوحة الإدارة والتحكم</h2>
+              <p>بيانات الزوار كاملة وأرقام الهواتف والحجوزات المسجلة</p>
+            </div>
+          </div>
+          <div class="admin-actions">
+            <button class="tp-btn tp-btn-sql" onclick="exportDataToSQL()">💾 حفظ كـ SQL (.sql)</button>
+            <button class="tp-btn tp-btn-outline" onclick="exportDataToCSV()">📥 تصدير Excel (CSV)</button>
+            <button class="tp-btn tp-btn-danger" onclick="confirmResetAll()">⚠️ تفريغ الكل</button>
+            <button class="tp-btn tp-btn-primary" onclick="closeAdminView()">خروج</button>
+          </div>
+        </div>
+
+        <div class="admin-filters">
+          <div class="filter-g">
+            <label>البوث:</label>
+            <select id="adminBoothFilter" onchange="renderAdminTable()">
+              <option value="all">جميع البوثات</option>
+            </select>
+          </div>
+          <div class="filter-g">
+            <label>بحث:</label>
+            <input type="text" id="adminSearchInput" oninput="renderAdminTable()" placeholder="اسم أو رقم...">
+          </div>
+          <div class="admin-count" id="adminBookingsCount">0 حجز</div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="tp-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>البوث</th>
+                <th>الموعد (من وقت إلى وقت)</th>
+                <th>اسم الزائر</th>
+                <th>الهاتف</th>
+                <th>توقيت التسجيل الفعلي</th>
+                <th>إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Booking Modal -->
+  <div id="bookingModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <span class="modal-badge">تأكيد الموعد</span>
+          <h3 id="modalBoothTitle">حجز موعد جديد</h3>
+        </div>
+        <button class="modal-x" onclick="closeBookingModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="booking-summary">
+          <div class="bs-row"><span>البوث:</span><strong class="text-brand" id="summaryBoothName">-</strong></div>
+          <div class="bs-row"><span>التوقيت:</span><strong class="text-orange" id="summarySlotTime">-</strong></div>
+          <div class="bs-row"><span>التاريخ والمدة:</span><strong>السبت 12/12/2026 (15 دقيقة)</strong></div>
+        </div>
+
+        <form id="bookingForm" onsubmit="submitBooking(event)">
+          <div class="field">
+            <label for="inputVisitorName">الاسم الكامل <span class="req">*</span></label>
+            <div class="input-box">
+              <span class="in-icon">👤</span>
+              <input type="text" id="inputVisitorName" required placeholder="أدخل اسمك الكامل" autocomplete="name">
+            </div>
+          </div>
+          <div class="field">
+            <label for="inputVisitorPhone">رقم الهاتف <span class="req">*</span></label>
+            <div class="input-box">
+              <span class="in-icon">📱</span>
+              <input type="tel" id="inputVisitorPhone" required placeholder="مثال: 0791234567" autocomplete="tel">
+            </div>
+            <span class="field-hint">لا يُسمح بحجز موعد آخر في نفس التوقيت عند بوث مختلف</span>
+          </div>
+          <div class="privacy-pill">🔒 بياناتك محفوظة ولا تظهر للزوار الآخرين — تظهر للإدارة فقط.</div>
+          <div class="modal-btns">
+            <button type="submit" class="tp-btn tp-btn-primary full-w">تأكيد الحجز ➜</button>
+            <button type="button" class="tp-btn tp-btn-ghost" onclick="closeBookingModal()">إلغاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal-overlay hidden">
+    <div class="modal-box success-box">
+      <div class="success-check">✓</div>
+      <h3>تم الحجز بنجاح!</h3>
+      <p class="success-sub" id="successDesc"></p>
+      <div class="ticket" id="successTicket"></div>
+      <button class="tp-btn tp-btn-primary full-w" onclick="closeSuccessModal()">تم، شكراً لك</button>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="modal-overlay hidden">
+    <div class="modal-box admin-auth-box">
+      <div class="modal-head">
+        <h3>دخول الإدارة</h3>
+        <button class="modal-x" onclick="closeAdminLoginModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="handleAdminAuth(event)">
+          <div class="field">
+            <label>كلمة المرور:</label>
+            <input type="password" id="adminPasswordInput" required placeholder="أدخل كلمة المرور" autofocus>
+          </div>
+          <div class="modal-btns">
+            <button type="submit" class="tp-btn tp-btn-primary">دخول</button>
+            <button type="button" class="tp-btn tp-btn-ghost" onclick="closeAdminLoginModal()">إلغاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="tp-footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <img src="logo.jpg" alt="" class="footer-logo">
+        <span>The Platform – المنصة | معرض 12/12/2026 • عمّان</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
